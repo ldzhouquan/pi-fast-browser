@@ -38,7 +38,7 @@ Requirements:
 - A TypeSafe API key for Jev routing
 - At least one model configured in PI Desktop when the task needs text entered into a field
 
-1. In PI Desktop's plugin manager, install [`dist/pi.fast-browser-0.2.0.piplug`](dist/pi.fast-browser-0.2.0.piplug).
+1. In PI Desktop's plugin manager, install [`dist/io.github.ldzhouquan.fast-browser-0.2.0.piplug`](dist/io.github.ldzhouquan.fast-browser-0.2.0.piplug).
 2. Enable **Fast Browser**.
 3. Open the plugin settings and set **TypeSafe API Key** (`typesafeKey`).
 4. Optionally change `typesafeModel` (default: `jev-latest`) or the per-run step budget (`maxSteps`, default: `60`).
@@ -219,7 +219,7 @@ Fast Browser 将 PI Desktop 的工作面板浏览器转化为一个紧凑、可�
 - 用于 Jev 路由决策的 TypeSafe API Key
 - 如任务需要填写文本字段，PI Desktop 中至少配置一个可用模型
 
-1. 在 PI Desktop 的插件管理器中安装 [`dist/pi.fast-browser-0.2.0.piplug`](dist/pi.fast-browser-0.2.0.piplug)。
+1. 在 PI Desktop 的插件管理器中安装 [`dist/io.github.ldzhouquan.fast-browser-0.2.0.piplug`](dist/io.github.ldzhouquan.fast-browser-0.2.0.piplug)。
 2. 启用 **Fast Browser**。
 3. 打开插件设置，填写 **TypeSafe API Key**（`typesafeKey`）。
 4. 如有需要，调整 `typesafeModel`（默认 `jev-latest`）或步数上限 `maxSteps`（默认 `60`）。
