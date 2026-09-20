@@ -323,3 +323,8 @@ node test/fast-browser.test.js
 ## 许可证
 
 [MIT](manifest.json)
+
+## 附加内容（Additions）
+
+- **[`skills/fast-browser/SKILL.md`](skills/fast-browser/SKILL.md)** — The fast-browser (JEV) skill doc: drive the work-panel browser via the observe → act workflow, and the boundary between JEV and CDP `evaluate`。fast-browser（JEV）技能说明：内置浏览器 UI 自动化的使用规范，以及 JEV 与 CDP evaluate 的分工边界。
+- **[`scripts/pi-cookie-import/`](scripts/pi-cookie-import/README.md)** — Chrome Cookie → PI-Desktop import tool: decrypt Chrome's login cookies into the work-panel browser so Jev tasks can access logged-in sites (macOS)。Chrome Cookie 导入工具：把 Chrome 的登录 Cookie 解密导入内置浏览器，使 Jev 任务能以已登录状态访问需要登录的站点。用法与安全说明见其 [README](scripts/pi-cookie-import/README.md)。

@@ -1,6 +1,3 @@
-# Build artifacts
-dist/
-*.piplug
 
 # Dependencies
 node_modules/
@@ -17,3 +14,9 @@ Thumbs.db
 .idea/
 .vscode/
 *.swp
+
+# Cookie-import tool artifacts (sensitive, never commit)
+scripts/pi-cookie-import/cookies.before_import.backup
+scripts/pi-cookie-import/import.log
+__pycache__/
+*.pyc
