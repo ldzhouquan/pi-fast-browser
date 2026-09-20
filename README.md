@@ -2,7 +2,7 @@
 
 > **A fast, visible browser agent for PI Desktop — Jev decides; you stay in the loop.**
 
-[中文](#中文) · [English](#fast-browser)
+[中文](#中文) · [English](#fast-browser) · [Getting Started](#getting-started) · [快速开始](#快速开始)
 
 Fast Browser turns a live PI Desktop work-panel browser into a compact, controllable action space. It observes the page as a numbered list of real controls, asks Jev for one constrained decision at a time, performs that action through the host-approved CDP surface, and repeats until the goal is complete, blocked, canceled, or reaches its step budget.
 
@@ -28,15 +28,15 @@ Visible work-panel browser → numbered, observed controls → Jev chooses one a
 - **Safe against stale pages.** Every decision is tied to an observed page fingerprint and rechecked immediately before execution.
 - **Zero extra key handling for text.** When a field needs a value, Fast Browser uses PI Desktop's already configured session model via `agent.complete`; the plugin never receives that model provider's API key.
 
-## Install
+## Getting Started
 
-### Requirements
+### 1. Install and configure
+
+Requirements:
 
 - PI Desktop `>= 0.2.0`
 - A TypeSafe API key for Jev routing
 - At least one model configured in PI Desktop when the task needs text entered into a field
-
-### From the bundled package
 
 1. In PI Desktop's plugin manager, install [`dist/pi.fast-browser-0.2.0.piplug`](dist/pi.fast-browser-0.2.0.piplug).
 2. Enable **Fast Browser**.
@@ -45,7 +45,21 @@ Visible work-panel browser → numbered, observed controls → Jev chooses one a
 
 The routing key is used only for Jev decisions at `api.typesafe.ai`. Field-text generation uses PI Desktop's configured model surface instead of asking you to copy another provider key into the plugin.
 
-## Your first run
+### 2. (Optional) Reuse your Chrome logins
+
+The work-panel browser keeps its own cookie store, so sites look logged-out on first visit. The bundled import tool (macOS) decrypts your Chrome cookies into it so Jev tasks can start signed-in:
+
+```bash
+# Quit PI-Desktop (Cmd+Q) first, then:
+scripts/pi-cookie-import/run_import.sh            # one-shot import
+
+# or start the watcher first, then quit PI-Desktop:
+scripts/pi-cookie-import/run_import_when_closed.sh &
+```
+
+The current cookie DB is backed up before importing; dependency setup (pycryptodomex) and restore steps are in [`scripts/pi-cookie-import/README.md`](scripts/pi-cookie-import/README.md). Skip this if your tasks need no logins — you can also sign in manually inside the work-panel browser later.
+
+### 3. Run your first task
 
 Give the agent a URL and a concrete, observable goal:
 
@@ -69,7 +83,11 @@ You can stop a run at any time:
 jev_cancel(runId: "run-…")
 ```
 
-For a hands-on, inspectable workflow, navigate the work-panel browser yourself, then use `jev_observe` and `jev_act` one action at a time.
+### 4. Or drive it manually
+
+For a hands-on, inspectable workflow, navigate the work-panel browser yourself, then use `jev_observe` and `jev_act` one action at a time (see [Tools](#tools) below).
+
+If you are wiring an agent onto these tools, read [`skills/fast-browser/SKILL.md`](skills/fast-browser/SKILL.md) first: it documents the intended usage rules — the observe → act workflow, index-based targeting, refreshed indexes after every observe, and when CDP `evaluate` is appropriate.
 
 ## Tools
 
@@ -191,15 +209,15 @@ Fast Browser 将 PI Desktop 的工作面板浏览器转化为一个紧凑、可�
 - **避免过期操作。** 每个决策均绑定到对应页面指纹，并在执行前立即复检。
 - **不用额外管理文本模型 Key。** 填写字段时，插件通过 `agent.complete` 调用 PI Desktop 中已配置的会话模型；插件不会接触该模型提供商的 API Key。
 
-## 安装
+## 快速开始
 
-### 前置条件
+### 1. 安装并配置
+
+前置条件：
 
 - PI Desktop `>= 0.2.0`
 - 用于 Jev 路由决策的 TypeSafe API Key
 - 如任务需要填写文本字段，PI Desktop 中至少配置一个可用模型
-
-### 安装内置包
 
 1. 在 PI Desktop 的插件管理器中安装 [`dist/pi.fast-browser-0.2.0.piplug`](dist/pi.fast-browser-0.2.0.piplug)。
 2. 启用 **Fast Browser**。
@@ -208,7 +226,21 @@ Fast Browser 将 PI Desktop 的工作面板浏览器转化为一个紧凑、可�
 
 路由 Key 仅用于向 `api.typesafe.ai` 请求 Jev 决策。字段文本则使用 PI Desktop 已配置的模型能力，无需把另一家模型服务的 Key 复制进插件。
 
-## 第一次运行
+### 2.（可选）导入 Chrome 登录态
+
+工作面板浏览器有独立的 Cookie 存储，首次访问需要登录的站点会是未登录状态。仓库自带的导入工具（macOS）可以把本机 Chrome 的登录 Cookie 解密导入，让 Jev 任务直接以已登录状态开始：
+
+```bash
+# 先 Cmd+Q 完全退出 PI-Desktop，然后：
+scripts/pi-cookie-import/run_import.sh            # 一次性导入
+
+# 或先启动后台 watcher，再退出 PI-Desktop：
+scripts/pi-cookie-import/run_import_when_closed.sh &
+```
+
+导入前会自动备份当前 Cookie 库；依赖安装（pycryptodomex）与恢复方法见 [`scripts/pi-cookie-import/README.md`](scripts/pi-cookie-import/README.md)。任务不需要登录态可跳过这一步，之后也可以直接在工作面板浏览器里手动登录。
+
+### 3. 跑第一个任务
 
 向智能体提供 URL 和一个清晰、可观察的目标：
 
@@ -232,7 +264,11 @@ jev_wait(runId: "run-…", timeoutMs: 20000)
 jev_cancel(runId: "run-…")
 ```
 
-如果你需要逐步确认，可先自行导航工作面板浏览器，再使用 `jev_observe` 和 `jev_act` 一步步操作。
+### 4. 或者手动逐步操作
+
+如果需要逐步确认，可先自行导航工作面板浏览器，再使用 `jev_observe` 和 `jev_act` 一步步操作（见下方[工具一览](#工具一览)）。
+
+要把智能体接到这些工具上，请先阅读 [`skills/fast-browser/SKILL.md`](skills/fast-browser/SKILL.md)：它写明了约定用法——observe → act 工作流、按编号定位元素、每次 observe 后索引会刷新，以及什么时候才允许用 CDP `evaluate`。
 
 ## 工具一览
 
