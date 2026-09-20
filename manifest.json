@@ -31,7 +31,6 @@
     "agent.complete",
     "models.list",
     "bus.publish",
-    "bus.subscribe",
     "background.service"
   ],
   "net": {
@@ -70,8 +69,7 @@
         "fast-browser.run.progress",
         "fast-browser.run.done",
         "fast-browser.run.error"
-      ],
-      "subscribe": []
+      ]
     },
     "settings": [
       {

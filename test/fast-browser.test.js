@@ -10,9 +10,7 @@
 "use strict";
 
 const assert = require("node:assert");
-const fs = require("node:fs");
 const path = require("node:path");
-const vm = require("node:vm");
 
 const pluginRoot = __dirname + "/..";
 
@@ -37,23 +35,10 @@ function makePiStub() {
 }
 
 function loadModule(name, pi) {
+  // Modules read the host-injected `pi` global at call time, so assigning the
+  // stub before a plain require is enough — same realm keeps assertions exact.
   globalThis.pi = pi;
-  const filename = path.join(pluginRoot, name);
-  const code = fs.readFileSync(filename, "utf8");
-  const module = { exports: {} };
-  // Evaluate in this realm so assertions compare equal arrays.
-  const wrapped = new Function("module", "exports", "require", "__dirname", "__filename", "pi", code + "\n;return module.exports;");
-  return wrapped(module, module.exports, (id) => {
-    if (id === "./cdp.js") return require(path.join(pluginRoot, "lib/cdp.js"));
-    if (id === "./policy.js") return loadModule("lib/policy.js", pi);
-    if (id === "./executor.js") return loadModule("lib/executor.js", pi);
-    if (id === "./loop.js") return loadModule("lib/loop.js", pi);
-    if (id === "node:fs") return require("node:fs");
-    if (id === "node:path") return require("node:path");
-    if (id === "node:crypto") return require("node:crypto");
-    if (id === "node:process") return require("node:process");
-    return require(id);
-  }, path.dirname(filename), filename, pi);
+  return require(path.join(pluginRoot, name));
 }
 
 // ---------------------------------------------------------------------------
