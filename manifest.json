@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "id": "pi.fast-browser",
+  "name": "Fast Browser",
+  "version": "0.2.0",
+  "description": "Jev-powered browser agent for PI-Desktop: dynamic indexed action space, one TypeSafe request per decision, work-panel browser via CDP. Tools: jev_observe, jev_act, jev_run, jev_wait, jev_cancel.",
+  "author": "local",
+  "license": "MIT",
+  "main": "main.js",
+  "permissions": [
+    "agent.tool.register",
+    "browser.cdp",
+    "net.fetch",
+    "agent.complete",
+    "models.list",
+    "bus.publish",
+    "bus.subscribe",
+    "background.service"
+  ],
+  "net": {
+    "domains": [
+      "api.typesafe.ai"
+    ]
+  },
+  "engines": {
+    "piDesktop": ">=0.2.0"
+  },
+  "contributes": {
+    "agentTools": [
+      {
+        "name": "jev_observe",
+        "description": "Observe the work-panel browser page and return the Jev-style numbered element table (index, role, label, value, operations) plus page text preview. Call after navigate."
+      },
+      {
+        "name": "jev_act",
+        "description": "Execute one observed action on the work-panel browser: CLICK / TYPE_TEXT / SELECT / SCROLL / WAIT. Pass an element index from jev_observe (e.g. \"3\", \"6:2\") or a control id (\"scroll_down\", \"wait\"), with text for TYPE_TEXT. Re-checks page freshness before acting."
+      },
+      {
+        "name": "jev_run",
+        "description": "Run the full Jev browser-agent loop on the work-panel browser: navigate to url, then observe -> Jev decision (TypeSafe API) -> execute -> repeat until DONE/BLOCKED/step budget. Returns immediately with a runId; poll with jev_wait."
+      },
+      {
+        "name": "jev_wait",
+        "description": "Wait for a jev_run run to finish or time out. Returns current status, step history, and the latest element table."
+      },
+      {
+        "name": "jev_cancel",
+        "description": "Cancel a running jev_run loop and release the work-panel browser."
+      }
+    ],
+    "bus": {
+      "publish": [
+        "fast-browser.run.progress",
+        "fast-browser.run.done",
+        "fast-browser.run.error"
+      ],
+      "subscribe": []
+    },
+    "settings": [
+      {
+        "key": "typesafeKey",
+        "title": "TypeSafe API Key",
+        "type": "string",
+        "default": "",
+        "description": "TypeSafe API key for Jev decision routing (https://api.typesafe.ai). Required for jev_run."
+      },
+      {
+        "key": "typesafeModel",
+        "title": "TypeSafe Model",
+        "type": "string",
+        "default": "jev-latest",
+        "description": "TypeSafe model id used for routing decisions."
+      },
+      {
+        "key": "maxSteps",
+        "title": "Max Steps",
+        "type": "number",
+        "default": 60,
+        "description": "Hard step budget per run (jev-ultrafast default 60)."
+      }
+    ],
+    "services": [
+      {
+        "id": "runner"
+      }
+    ]
+  }
+}
