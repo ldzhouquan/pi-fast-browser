@@ -1,74 +1,55 @@
-# Fast Browser (pi.fast-browser)
+# Fast Browser（pi.fast-browser）
 
-Jev-powered browser agent for PI-Desktop. A TypeScript/JS port of
-[jev-ultrafast](https://github.com/browser-use/jev-ultrafast)'s loop that drives
-the **work-panel browser** through the host's allowlisted CDP surface — no
-Python, no Browser Harness, no separate Chrome.
+基于 Jev 的 PI-Desktop 浏览器智能体。这是 [jev-ultrafast](https://github.com/browser-use/jev-ultrafast) 循环逻辑的 TypeScript/JS 移植版，通过宿主允许的 CDP 接口驱动**工作面板浏览器（work-panel browser）**——不需要 Python、不需要 Browser Harness、不需要单独的 Chrome。
 
-## Why this design
+## 为什么这样设计
 
-- **Jev stays the router.** One TypeSafe request per decision decides both the
-  operation and the target element (dynamic indexed action space). This keeps
-  the performance/cost profile that makes jev-ultrafast fast.
-- **Text generation uses a host-configured model.** When the operation is
-  TYPE_TEXT, `pi.agent.complete` generates the field value. The model is
-  auto-picked from the host's configured providers (preferring cheap/fast
-  non-reasoning models; the picked id is reported in each run's text_calls), so
-  the plugin never sees API keys, never asks for an endpoint, and there is no
-  free-text key field that can be mistyped.
-- **One browser, visible.** The work-panel browser is a shared visible resource
-  — the user can watch every step; a single run is enforced at a time.
+- **Jev 仍然是路由器（router）**。每一步决策只发一次 TypeSafe 请求，同时决定操作类型和目标元素（动态索引动作空间）。这保留了 jev-ultrafast 高效快速的优势（性能与成本特性）。
+- **文本生成使用宿主配置的模型**。当操作是 TYPE_TEXT 时，由 `pi.agent.complete` 生成字段值。模型从宿主已配置的 provider 中自动挑选（优先选择便宜/快速的非推理模型；每次运行的 `text_calls` 中会报告选中的模型 id）。因此插件永远接触不到 API Key，无需用户填写端点，也不会出现容易输错的自由文本 Key 字段。
+- **单一浏览器，全程可见**。工作面板浏览器是共享的可见资源——用户可以观看到每一步执行；同一时间只运行一个任务。
 
-## Tools
+## 工具（Tools）
 
-| Tool | Purpose |
+| 工具 | 用途 |
 | --- | --- |
-| `jev_observe` | Inject snapshot.js, return the numbered element table + page text |
-| `jev_act` | Execute one action by index / select option / control id |
-| `jev_run` | Run the full loop: navigate → observe → Jev decision → execute → repeat |
-| `jev_wait` | Poll a run to done/blocked/error/canceled or timeout |
-| `jev_cancel` | Stop a running loop |
+| `jev_observe` | 注入 snapshot.js，返回编号元素表 + 页面文本预览 |
+| `jev_act` | 按元素索引 / 下拉选项 / 控制命令执行一个操作 |
+| `jev_run` | 运行完整循环：导航 → 观察 → Jev 决策 → 执行 → 重复 |
+| `jev_wait` | 轮询任务直到 done / blocked / error / canceled 或超时 |
+| `jev_cancel` | 停止正在运行的循环 |
 
-## Settings
+## 设置（Settings）
 
-| Key | Default | Purpose |
+| Key | 默认值 | 用途 |
 | --- | --- | --- |
-| `typesafeKey` | "" | TypeSafe API key (required for `jev_run`) |
-| `typesafeModel` | `jev-latest` | Routing model id |
-| `maxSteps` | 60 | Hard step budget per run |
+| `typesafeKey` | `""` | TypeSafe API Key（`jev_run` 必需） |
+| `typesafeModel` | `jev-latest` | 路由决策使用的模型 id |
+| `maxSteps` | 60 | 每次运行的硬性步数预算 |
 
-## Architecture
+## 架构（Architecture）
 
 ```
-main.js            tool registration, settings, bus wiring
-lib/cdp.js         pi.browser.cdp wrappers (evaluate / input / insertText / waits)
-lib/executor.js    observe, fresh (page_key+guard / marker), act (click/fill/select/scroll/wait)
-lib/policy.js      actionSpace, choose (TypeSafe request + strict validation), fieldText (agent.complete)
-lib/loop.js        RunManager: tick/predict/act state machine, history, repetition detection
-snapshot.js        verbatim from jev-ultrafast (107 lines, no changes)
+main.js            工具注册、设置、bus 接线
+lib/cdp.js         pi.browser.cdp 封装（evaluate / input / insertText / waits）
+lib/executor.js    observe、fresh（page_key + guard / marker）、act（click / fill / select / scroll / wait）
+lib/policy.js      actionSpace、choose（TypeSafe 请求 + 严格校验）、fieldText（agent.complete）
+lib/loop.js        RunManager：tick / predict / act 状态机、历史记录、重复检测
+snapshot.js        原样取自 jev-ultrafast（107 行，未做任何修改）
 ```
 
-Runs are tracked in-process as fire-and-forget promises: `jev_run` returns a
-`runId` immediately, `jev_wait` polls, so the host's tool-timeout limits are
-never hit by long loops. Progress is broadcast on
-`fast-browser.run.progress|done|error` (declared bus topics).
+任务在进程内以 fire-and-forget promise 的方式跟踪：`jev_run` 立即返回 `runId`，`jev_wait` 轮询进度，因此长循环永远不会触发宿主的工具超时限制。进度通过 `fast-browser.run.progress | done | error`（已声明的 bus 主题）广播。
 
-## Safety invariants (kept from the original)
+## 安全不变量（继承自原版）
 
-- Model output never becomes selectors, coordinates, shell commands, or
-  executable JS — every target is resolved from an observed DOM node id.
-- Every decision is bound to the observation that produced it (fingerprint /
-  page_key + guard); stale pages re-observe and re-decide.
-- TypeSafe responses must pass strict probability validation before anything
-  executes.
-- Decisions are consumed before execution, so retries can never double-click.
+- 模型输出永远不会变成选择器、坐标、shell 命令或可执行 JS——每个目标都从已观察到的 DOM 节点 id 解析。
+- 每个决策都绑定到产生它的那次观察（fingerprint / page_key + guard）；页面过期时重新观察、重新决策。
+- TypeSafe 响应在真正执行任何操作之前必须通过严格的概率校验。
+- 决策在执行前被消费，因此重试永远不会造成重复点击。
 
-## Test
+## 测试（Test）
 
 ```bash
 node test/fast-browser.test.js
 ```
 
-Covers actionSpace, validateChoice, postJson retry, choose (valid/invalid
-responses), fieldText, and the RunManager loop reaching DONE through a stubbed
-browser — no CDP, no network, no host calls.
+覆盖 actionSpace、validateChoice、postJson 重试、choose（有效/无效响应）、fieldText，以及 RunManager 循环通过 stub 浏览器达到 DONE——无需 CDP、网络或宿主调用。
