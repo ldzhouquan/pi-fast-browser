@@ -1,5 +1,5 @@
 /**
- * Test suite for io.github.ldzhouquan.fast-browser (Fast Browser) ported logic.
+ * Test suite for io.github.ldzhouquan.fast-browser (Jev Browser Use) ported logic.
  *
  * Covers policy (actionSpace, validateChoice, postJson retry, choose with a
  * stubbed fetch, fieldText with a stubbed host) and the RunManager loop's

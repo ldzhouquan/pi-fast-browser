@@ -1,5 +1,5 @@
 /**
- * Fast Browser (io.github.ldzhouquan.fast-browser) — v0.2.0
+ * Jev Browser Use (io.github.ldzhouquan.fast-browser) — v0.2.1
  *
  * Jev-powered browser agent for PI-Desktop. One TypeSafe request per decision,
  * work-panel browser via the host's allowlisted CDP surface, session-model text

@@ -1,6 +1,6 @@
 # Chrome Cookie → PI-Desktop 导入工具
 
-把本机 Chrome 的登录 Cookie 解密后导入 PI-Desktop 内置浏览器（work-panel browser）的 Cookie 库，让 fast-browser（Jev）任务能以已登录状态访问需要登录的站点（如 chatgpt.com、Google 等）。
+把本机 Chrome 的登录 Cookie 解密后导入 PI-Desktop 内置浏览器（work-panel browser）的 Cookie 库，让 Jev Browser Use（Jev）任务能以已登录状态访问需要登录的站点（如 chatgpt.com、Google 等）。
 
 > ⚠️ **仅限 macOS**。Cookie 属于敏感凭据：本目录下的 `cookies.before_import.backup` 和 `import.log` 已被 `.gitignore` 排除，**永远不要把真实 Cookie 提交到仓库**。
 

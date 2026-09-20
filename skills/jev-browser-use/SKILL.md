@@ -1,13 +1,13 @@
 ---
-name: fast-browser
+name: jev-browser-use
 description: Drive PI-Desktop's built-in work-panel browser with the fast-browser (JEV) tools: observe the page as a numbered element table, then click/type/select by index. Use for all UI navigation and interaction. CDP evaluate is only for page-script checks (cookies, URL, network).
 ---
 
-# Fast Browser (JEV) — PI-Desktop 内置浏览器 UI 自动化
+# Jev Browser Use (JEV) — PI-Desktop 内置浏览器 UI 自动化
 
 ## 何时用本技能
 
-内置浏览器（work-panel browser）的所有 **UI 操作**都走 fast-browser（JEV）工具：
+内置浏览器（work-panel browser）的所有 **UI 操作**都走 Jev Browser Use（JEV）工具：
 点击菜单/按钮/标签、填输入框、选下拉选项、滚动页面、多步导航、读取页面可见内容。
 
 **不要**用 CDP `evaluate` 做这些事（CDP evaluate 只用于跑页面脚本，见下方边界）。
@@ -56,4 +56,4 @@ CDP 大多数方法（`Network.setCookies`、`Storage.getCookies`、`Browser.get
 
 - 每次 `jev_observe` 重新观察页面，元素索引在**页面未变化时**才稳定；操作后必须重新 observe。
 - `jev_run` 是自动循环，适合独立任务；交互式逐步操作用手动 observe→act。
-- fast-browser 操作的是 PI-Desktop 的 work-panel 浏览器，与 `Browser` 技能（Playwright 无头 `Browse.ts`）是**两套不同浏览器**，不要混用。
+- Jev Browser Use 操作的是 PI-Desktop 的 work-panel 浏览器，与 `Browser` 技能（Playwright 无头 `Browse.ts`）是**两套不同浏览器**，不要混用。
